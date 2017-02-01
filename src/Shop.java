@@ -17,8 +17,9 @@ public class Shop {
 		try{
 			initializeGoods();
 			showStoredEquipment();
-			while(true){
-				takeEquipment();
+            System.out.println("\nIf you want complete the purchase just type \"EXIT\"!\n");
+            while(true){
+                takeEquipment();
 			}
 		} catch(ExitException e){
 			showRentedEquipment();
@@ -37,8 +38,10 @@ public class Shop {
 	}
 	//TAKE equipment from goods and PUT it in RentUnit
 	private static void takeEquipment() throws IOException, ExitException{
-			String title = readString();
-			int count = Integer.parseInt(readString());
+        System.out.println("Please, Enter name of one equipment from list above!");
+        String title = readString();
+        System.out.println("Please, Enter count of it!");
+        int count = Integer.parseInt(readString());
 			boolean isFound = false;
 
 			for(Map.Entry<SportEquipment, Integer> good : goods.entrySet()){
@@ -60,7 +63,7 @@ public class Shop {
 		String string = null;
 		try {
 			string = reader.readLine();
-			if (string.equals("exit")) throw new ExitException();
+			if (string.equalsIgnoreCase("exit")) throw new ExitException();
 		} catch (IOException e) {/*ignored*/}
 		return string;
 	}
