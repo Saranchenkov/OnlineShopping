@@ -10,6 +10,8 @@ import java.util.Map;
 public class Shop {
 	private static Map<SportEquipment, Integer> goods;
 	private final static String fileName = Shop.class.getProtectionDomain().getCodeSource().getLocation().getPath() + "goods.txt";
+	private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+	private static RentUnit rentUnit = new RentUnit();
 
 	public static void main(String...args) throws IOException{
 		try{
@@ -19,11 +21,12 @@ public class Shop {
 				takeEquipment();
 			}
 		} catch(ExitException e){
+			showRentedEquipment();
 			System.out.println("Thank you for your purchase!");
 		}
 	}
 	
-	private static void initializeGoods() throws IOException{
+	private static void initializeGoods() throws ExitException, IOException {
 		goods = new HashMap<>();
 		try(BufferedReader reader = new BufferedReader(new FileReader(fileName))){
 			while(reader.ready()){
@@ -32,32 +35,36 @@ public class Shop {
 			}
 		}
 	}
-	
+	//TAKE equipment from goods and PUT it in RentUnit
 	private static void takeEquipment() throws IOException, ExitException{
-		try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))){
-			String title = reader.readLine();
-			if(title.equals("exit")) throw new ExitException();
-			int count = Integer.parseInt(reader.readLine());
-			
-			/*for(Map.Entry<SportEquipment, Integer> good : goods.entrySet()){
-				if (good.getKey().getTitle().equals(title) && count <=3){
-					good.setValue(good.getValue() - count);
-				} 
-			}*/
-			
-			Iterator<SportEquipment> iterator = goods.keySet().iterator();
-			
-			while(iterator.hasNext()){
-				SportEquipment equipment = iterator.next();
-				if (equipment.getTitle().equals(title) && count <= 3){
-					goods.put(equipment, goods.get(equipment) - count);
-					
-				} 
+			String title = readString();
+			int count = Integer.parseInt(readString());
+			boolean isFound = false;
+
+			for(Map.Entry<SportEquipment, Integer> good : goods.entrySet()){
+				if (isFound) break;
+				if (good.getKey().getTitle().equals(title)){
+					isFound = true;
+					rentUnit.addUnits(good.getKey());
+					if (good.getValue() < count) System.out.println(String.format("You may buy only %d things", good.getValue()));
+
+					goods.put(good.getKey(), count <= good.getValue() ? good.getValue() - count : 0);
+					System.out.println(String.format("%s was purchased. The remaining %d.", title, good.getValue()));
+				}
 			}
-		}
-		
+
+			if (!isFound) System.out.println(String.format("Equipment \"%s\" is not found", title));
 	}
-	
+
+	private static String readString() throws ExitException {
+		String string = null;
+		try {
+			string = reader.readLine();
+			if (string.equals("exit")) throw new ExitException();
+		} catch (IOException e) {/*ignored*/}
+		return string;
+	}
+
 	private static void parseGood(String line){
 		String[] parts = line.split("/");
 		SportEquipment equipment = new SportEquipment(new Category(parts[0]), parts[1], Integer.valueOf(parts[2]));
@@ -70,10 +77,8 @@ public class Shop {
 		}
 	}
 	
-/*	private static void showRentedEquipment(){
-		for(SportEquipment equipment :){
-			System.out.println(.getKey() + ", Count: " + .getValue());
-		}
-	}*/
+	private static void showRentedEquipment(){
+		System.out.println(rentUnit);
+	}
 
 }
