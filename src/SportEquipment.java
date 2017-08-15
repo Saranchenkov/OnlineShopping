@@ -13,7 +13,7 @@ class SportEquipment {
 		return String.format("Category: %s, Name: %s, Price: %d$", category, title, price);
 	}
 	
-	public String getTitle(){
+	String getTitle(){
 		return title;
 	}
 }

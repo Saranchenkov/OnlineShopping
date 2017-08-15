@@ -1,4 +1,0 @@
-
-class ExitException extends Exception{
-
-}
